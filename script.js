@@ -1261,7 +1261,25 @@ function update(delta) {
 
   bullets.forEach((b, bi) => {
     enemies.forEach((e, ei) => {
-      if (b.x < e.x + e.w && b.x + b.w > e.x && b.y < e.y + e.h && b.y + b.h > e.y) {
+      // --- START: Modified collision logic for less sensitivity ---
+      const collisionPaddingFactor = 0.25; // This means 25% padding on each side of the bullet.
+                                           // The bullet's "core" will be its central 50% (1 - 2*0.25).
+
+      const coreBulletOffsetX = b.w * collisionPaddingFactor;
+      const coreBulletOffsetY = b.h * collisionPaddingFactor;
+
+      const coreBulletX = b.x + coreBulletOffsetX;
+      const coreBulletY = b.y + coreBulletOffsetY;
+
+      const coreBulletWidth = b.w * (1 - 2 * collisionPaddingFactor);
+      const coreBulletHeight = b.h * (1 - 2 * collisionPaddingFactor);
+
+      // Check collision between the bullet's core and the enemy's full bounding box
+      if (coreBulletX < e.x + e.w &&
+          coreBulletX + coreBulletWidth > e.x &&
+          coreBulletY < e.y + e.h &&
+          coreBulletY + coreBulletHeight > e.y) {
+      // --- END: Modified collision logic for less sensitivity ---
         if (!sentenceActive) {
             const sentenceToFirework = sentences[sentenceIndex];
             const globalIndexOfSentence = sentenceIndex;
